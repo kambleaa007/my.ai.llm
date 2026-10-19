@@ -14,7 +14,21 @@ try:
 except Exception as e:
     print("Failed to load marathi_data.json:", e)
 
-# Marathi Alpaca Instruct
+# Smallstep Marathi Alpaca (~48k pairs)
+try:
+    ds = load_dataset("smallstepai/marathi-instruction-tuning-alpaca", split="train")
+    for r in ds:
+        q = r.get("instruction", "")
+        if r.get("input"):
+            q += f"\n\nमाहिती:\n{r['input']}"
+        a = r.get("output", "")
+        if q and a:
+            rows.append({"text": f"<start_of_turn>user\n{q}<end_of_turn>\n<start_of_turn>model\n{a}<end_of_turn>"})
+    print("Loaded smallstep marathi-alpaca")
+except Exception as e:
+    print("smallstep failed:", e)
+
+# Marathi Alpaca (aghatage)
 try:
     ds = load_dataset("aghatage/marathi-alpaca-llama-finetune", split="train")
     for r in ds:
@@ -24,9 +38,9 @@ try:
         a = r.get("output", "")
         if q and a:
             rows.append({"text": f"<start_of_turn>user\n{q}<end_of_turn>\n<start_of_turn>model\n{a}<end_of_turn>"})
-    print("Loaded marathi-alpaca")
+    print("Loaded aghatage marathi-alpaca")
 except Exception as e:
-    print("marathi-alpaca failed:", e)
+    print("aghatage failed:", e)
 
 # Marathi Multi-Domain SFT
 try:
@@ -40,12 +54,12 @@ try:
 except Exception as e:
     print("marathi-multidomain failed:", e)
 
-# AI4Bharat Indic-Instruct (Marathi subset)
+# AI4Bharat Indic-Instruct (Marathi subset, streaming)
 try:
     ds = load_dataset("ai4bharat/indic-instruct-data-v0.1", split="train", streaming=True)
     count = 0
     for r in ds:
-        if r.get("language") != "mr" and r.get("lang") != "mr":
+        if r.get("language") not in (None, "mr") and r.get("lang") not in (None, "mr"):
             continue
         q = r.get("instruction") or r.get("prompt", "")
         a = r.get("output") or r.get("response", "")
