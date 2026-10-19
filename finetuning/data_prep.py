@@ -21,6 +21,19 @@ try:
 except Exception as e:
     print("Samanantar failed:", e)
 
+# Template-based augmentation to expand dataset
+templates = [
+ ("{} विषयावर एक लहान मराठी कथा लिहा.", "एकदा {} गावात एक घटना घडली. त्यात लोकांनी एकत्र येऊन समस्या सोडवली. शेवटी सर्वजण खूश झाले."),
+ ("{} बद्दल मराठीत माहिती द्या.", "{} हा एक महत्त्वाचा विषय आहे. त्याचे अनेक फायदे आहेत. लोक त्याचा वापर करतात."),
+ ("{} वर एक मराठी कविता लिहा.", "{}\n{}\n{}\n{}"),
+]
+topics = ["शिक्षण", "प्रेम", "निसर्ग", "मित्रत्व", "परिश्रम", "स्वप्न"]
+for t in topics:
+    for q_tpl, a_tpl in templates[:2]:
+        q = q_tpl.format(t)
+        a = a_tpl.format(t)
+        rows.append({"text": f"<start_of_turn>user\n{q}<end_of_turn>\n<start_of_turn>model\n{a}<end_of_turn>"})
+
 with open("marathi_instruct.jsonl", "w", encoding="utf-8") as f:
     for r in rows:
         f.write(json.dumps(r, ensure_ascii=False) + "\n")
