@@ -12,9 +12,9 @@ model, tokenizer = FastLanguageModel.from_pretrained(
 
 model = FastLanguageModel.get_peft_model(
     model,
-    r=16,
+    r=32,
     target_modules=["q_proj","k_proj","v_proj","o_proj","gate_proj","up_proj","down_proj"],
-    lora_alpha=16,
+    lora_alpha=64,
     lora_dropout=0,
     bias="none",
     use_gradient_checkpointing="unsloth",
@@ -31,13 +31,14 @@ trainer = SFTTrainer(
     args=TrainingArguments(
         per_device_train_batch_size=2,
         gradient_accumulation_steps=4,
-        warmup_steps=5,
-        max_steps=200,
+        warmup_ratio=0.03,
+        num_train_epochs=3,
         learning_rate=2e-4,
         fp16=True,
         logging_steps=10,
         output_dir="outputs",
         optim="adamw_8bit",
+        lr_scheduler_type="cosine",
     ),
 )
 

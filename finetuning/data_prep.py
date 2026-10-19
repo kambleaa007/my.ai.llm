@@ -1,5 +1,6 @@
 """Prepare Marathi datasets for Gemma 2 9B QLoRA fine-tuning."""
 import json
+import unicodedata
 from datasets import load_dataset
 
 rows = []
@@ -71,5 +72,6 @@ except Exception as e:
 
 with open("marathi_instruct.jsonl", "w", encoding="utf-8") as f:
     for r in rows:
-        f.write(json.dumps(r, ensure_ascii=False) + "\n")
+        text = unicodedata.normalize("NFC", r["text"])
+        f.write(json.dumps({"text": text}, ensure_ascii=False) + "\n")
 print("Wrote", len(rows), "records")
