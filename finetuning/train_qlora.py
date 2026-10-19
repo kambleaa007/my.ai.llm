@@ -20,7 +20,7 @@ model = FastLanguageModel.get_peft_model(
     use_gradient_checkpointing="unsloth",
 )
 
-ds = load_dataset("json", data_files="data/marathi_instruct.jsonl", split="train")
+ds = load_dataset("json", data_files="marathi_instruct.jsonl", split="train")
 
 trainer = SFTTrainer(
     model=model,
