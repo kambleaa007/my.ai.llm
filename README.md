@@ -2,6 +2,12 @@
 
 Documentation and implementation for a Marathi-first language model for the people of Maharashtra: data pipeline, pre-training, fine-tuning, evaluation, serving, applications, and maintenance. Monolingual Marathi (ISO 639-1: mr) with Marathi-English code-mixing support.
 
+## Quality Standards (Mandatory)
+- Diverse, deduplicated instruction data; no repeated templates.
+- Inference uses temperature/top-p sampling for varied, non-repetitive answers.
+- Human evaluation by native Marathi speakers required before release.
+- Continuous iteration; 100% correctness is not achievable—target best-in-class quality.
+
 ## Stages
 
 | Stage | Document | Covers |
