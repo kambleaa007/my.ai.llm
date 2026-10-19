@@ -14,4 +14,3 @@ with open("marathi_instruct.jsonl", "w", encoding="utf-8") as f:
     for r in rows:
         f.write(json.dumps(r, ensure_ascii=False) + "\n")
 print("Wrote", len(rows), "records")
-"""
