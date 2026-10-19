@@ -19,4 +19,3 @@ qa = load_dataset("ai4bharat/IndicQA", "mr", split="train")
 qa = qa.map(lambda x: {"text": f"<start_of_turn>user\n{x['question']}<end_of_turn>\n<start_of_turn>model\n{x['answer']}<end_of_turn>"}, remove_columns=qa.column_names)
 qa.to_json("data/marathi_qa.jsonl")
 print("Done")
-"""

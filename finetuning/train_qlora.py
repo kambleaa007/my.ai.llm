@@ -46,4 +46,3 @@ model.save_pretrained("marathi-gemma-2-9b")
 tokenizer.save_pretrained("marathi-gemma-2-9b")
 model.save_pretrained_gguf("marathi-gemma-2-9b-gguf", tokenizer, quantization_method="q4_k_m")
 print("Done")
-"""
