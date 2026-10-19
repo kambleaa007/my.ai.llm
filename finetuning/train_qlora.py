@@ -1,8 +1,7 @@
 """QLoRA fine-tune Gemma 2 9B on Marathi data using Unsloth."""
+from trl import SFTTrainer, DataCollatorForCompletionOnlyLM
+from transformers import AutoTokenizer
 from unsloth import FastLanguageModel
-from trl import SFTTrainer
-from transformers import TrainingArguments
-from datasets import load_dataset
 
 model, tokenizer = FastLanguageModel.from_pretrained(
     model_name="unsloth/gemma-2-9b-bnb-4bit",
@@ -22,12 +21,16 @@ model = FastLanguageModel.get_peft_model(
 
 ds = load_dataset("json", data_files="marathi_instruct.jsonl", split="train")
 
+response_template = "<start_of_turn>model\n"
+collator = DataCollatorForCompletionOnlyLM(response_template=response_template, tokenizer=tokenizer)
+
 trainer = SFTTrainer(
     model=model,
     tokenizer=tokenizer,
     train_dataset=ds,
     dataset_text_field="text",
     max_seq_length=2048,
+    data_collator=collator,
     args=TrainingArguments(
         per_device_train_batch_size=2,
         gradient_accumulation_steps=4,
