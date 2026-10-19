@@ -1,0 +1,23 @@
+# Indian LLM Data Pipeline Dependencies
+# ======================================
+
+# Core
+python-dotenv>=1.0.0
+pyyaml>=6.0.1
+
+# Scraping
+requests>=2.31.0
+beautifulsoup4>=4.12.3
+feedparser>=6.1.1
+lxml>=4.9.4
+
+# Tokenizer
+tokenizers>=0.19.1
+sentencepiece>=0.2.0
+
+# Data processing
+datasets>=2.20.0
+numpy>=1.26.4
+
+# Utilities
+tqdm>=4.66.5

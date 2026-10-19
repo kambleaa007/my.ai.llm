@@ -1,0 +1,134 @@
+# Marathi LLM Data Pipeline Configuration
+# ======================================
+
+# --- Data Sources ---
+sources:
+  wikipedia:
+    enabled: true
+    languages: [mr]
+    max_pages_per_lang: 100000
+    output: raw/wikipedia
+
+  news:
+    enabled: true
+    sources:
+      - name: "Maharashtra Times"
+        urls: ["https://maharashtratimes.com"]
+        lang: mr
+      - name: "Loksatta"
+        urls: ["https://www.loksatta.com"]
+        lang: mr
+      - name: "Sakal"
+        urls: ["https://www.sakal.com"]
+        lang: mr
+      - name: "Pudhari"
+        urls: ["https://www.pudhari.news"]
+        lang: mr
+    output: raw/news
+
+  books:
+    enabled: true
+    sources:
+      - name: "Project Gutenberg (Indic)"
+        url: "https://www.gutenberg.org"
+        lang: multi
+      - name: "Internet Archive"
+        url: "https://archive.org"
+    output: raw/books
+
+  web_crawl:
+    enabled: true
+    note: "Use CommonCrawl subset filtered by .in domain and Indic script detection"
+    output: raw/web
+
+  code:
+    enabled: true
+    sources:
+      - name: "GitHub (Indian domains)"
+        url: "https://github.com"
+        languages: [python, c, cpp, java, javascript]
+    output: raw/code
+
+# --- Cleaning ---
+cleaning:
+  min_length: 20          # characters per document
+  max_length: 200000      # characters per document
+  min_words: 5
+  max_word_length: 100
+  strip_whitespace: true
+  normalize_unicode: true
+  unicode_form: "NFKC"    # NFKC, NFC, NFD
+  remove_emails: true
+  remove_urls: true
+  remove_html: true
+  min_alpha_ratio: 0.6    # minimum fraction of alphabetic characters
+
+# --- Deduplication ---
+deduplication:
+  method: "minhash"       # minhash, simhash, exact
+  num_buckets: 14
+  num_hashes: 128
+  jaccard_threshold: 0.8
+  exact_dedup: true
+  near_dedup: true
+
+# --- Quality Filtering ---
+  quality_filtering:
+    perplexity_model: "small LM (e.g., KenLM 6-gram or small GPT-2)"
+    perplexity_threshold: 1000.0
+    language_detection:
+      model: "fasttext lid-176"
+      confidence_threshold: 0.70
+      target_languages: [mr, en]
+    bad_words_filter: true
+    min_doc_words: 20
+    max_doc_words: 50000
+
+# --- Data Mixing ---
+  mixing:
+    ratios:
+      general_text: 0.70     # Wikipedia, news, books, web
+      domain_specific: 0.20  # Code, legal, medical, technical
+      high_quality: 0.10     # Curated, verified, instruction data
+    script_balancing:
+      enabled: false
+      strategy: "oversample_minority"
+      minority_languages: [mr]
+      oversample_factor: 1.0
+    code_switching:
+      enabled: true
+      target_ratio: 0.10     # 10% of data should be Marathi-English code-mixed (Marathish)
+
+
+# --- Tokenizer ---
+  tokenizer:
+    algorithm: "BPE"        # BPE, WordPiece, Unigram
+    vocab_size: 64000
+    min_frequency: 2
+    special_tokens:
+      - "<|pad|>"
+      - "<|unk|>"
+      - "<|bos|>"
+      - "<|eos|>"
+      - "<|user|>"
+      - "<|assistant|>"
+      - "<|system|>"
+    character_coverage: 1.0
+    training_data_sample: 1000000  # lines for training
+
+# --- Output ---
+output:
+  format: "jsonl"         # jsonl, parquet, tfrecord
+  shard_size: 100000      # records per shard
+  compression: "zstd"     # gzip, zstd, none
+  output_dir: "data/processed"
+
+# --- Paths ---
+paths:
+  raw: "data/raw"
+  cleaned: "data/cleaned"
+  deduped: "data/deduped"
+  filtered: "data/filtered"
+  mixed: "data/mixed"
+  tokenizer: "tokenizer"
+  logs: "logs"
