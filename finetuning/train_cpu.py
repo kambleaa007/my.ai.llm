@@ -29,7 +29,6 @@ args = TrainingArguments(
     fp16=False,
     logging_steps=10,
     save_steps=100,
-    no_cuda=True,
 )
 
 trainer = Trainer(model=model, args=args, train_dataset=ds)
