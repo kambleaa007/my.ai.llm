@@ -37,4 +37,3 @@ trainer.train()
 trainer.save_model("./marathi-tiny")
 tokenizer.save_pretrained("./marathi-tiny")
 print("Done")
-"""
